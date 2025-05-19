@@ -1,24 +1,35 @@
-const express = require("express"); 
-
+const express = require("express");
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-app.get("/user", (req,res)=> {
-    res.send({firstName: "Karthik", lastName: "Nair"});
+app.post("/signup", async (req, res) => {
+  // Creating a new instance of the User model
+  const user = new User({
+    firstName: "Karthik",
+    lastName: "Nair",
+    emailId: "karthiknair2004@gmail.com",
+    password: "123456",
+  });
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (err) {
+    res.status(400).send("Error adding user");
+  }
 });
 
-app.post("/user", (req,res)=> {
-    console.log("Save Data to the Database");
-    res.send("Data successfully saved to the database");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection established");
+    app.listen(7777, () => {
+      console.log("Server is running on port 7777");
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection error:");
+  });
 
-app.delete("/user", (req,res)=> {
-    res.send("Deleted successfully");
+app.use("/user", (req, res) => {
+  res.send("Route Handler1");
 });
-app.use("/test", (req,res) => {
-    res.send("hello from the server!");
-});
-
-app.listen(3000, ()=> {
-    console.log("Server is running on port 3000");
-});
- 
