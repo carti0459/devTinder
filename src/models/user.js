@@ -1,24 +1,70 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const validator = require("validator");
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     firstName: {
-        type: String
+      type: String,
+      required: true,
+      minLength: 4,
+      maxLength: 50,
     },
     lastName: {
-        type: String
+      type: String,
     },
     emailId: {
-        type: String
+      type: String,
+      lowercase: true,
+      required: true,
+      unique: true,
+      trim: true,
+      validate(value) {
+        if(!validator.isEmail(value)){
+            throw new Error("Invalid email address");
+        }
+      },
     },
     password: {
-        type: String
+      type: String,
+      required: true,
+      validate(value) {
+        if(!validator.isStrongPassword(value)){
+            throw new Error("Not a strong password");
+        }
+      },
     },
     age: {
-        type: Number
+      type: Number,
+      min: 18,
+      max: 100,
     },
     gender: {
-        type: String
-    }
-});
- 
+      type: String,
+      validate(value) {
+        if (["male", "female", "others"].includes(value)) {
+          throw new Error("Gender data is not valid");
+        }
+      },
+    },
+    photoUrl: {
+      type: String,
+      validate(value) {
+        if(!validator.isURL(value)){
+            throw new Error("Invalid Photo URL");
+        }
+      },
+    },
+    about: {
+      type: String,
+      default: "this is a default about of the user !",
+    },
+    skills: {
+      type: [String],
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 module.exports = mongoose.model("User", userSchema);
