@@ -14,7 +14,7 @@ requestRouter.post(
       const toUserId = req.params.toUserId;
       const status = req.params.status;
 
-      const allowedStatus = ["ignores", "interested"];
+      const allowedStatus = ["ignored", "interested"];
       if(!allowedStatus.includes(status)){
         return res
         .status(400)
@@ -23,7 +23,7 @@ requestRouter.post(
       //Check if the user is sending the request to themselves
        
 
-      const toUser = await UserActivation.findById(toUserId);
+      const toUser = await User.findById(toUserId);
       if (!toUser) {
         return res.status(404).json({
            message: "User not found" 
@@ -73,7 +73,7 @@ requestRouter.post(
 
       const connectionRequest = await ConnectionRequest.findOne({
         _id: requestId,
-        toUserId: loggedInUser._id,
+        toUserId: loggedInUserId._id,
         status: "interested",
       });
       if (!connectionRequest) {
